@@ -17,3 +17,37 @@ const map = new mapboxgl.Map({
   minZoom: 5, // Minimum zoom level allowed
   maxZoom: 18, // Maximum zoom level allowed
 });
+
+// Shared style for both bike-lane layers, so we only tweak it in one place
+const bikeLanePaint = {
+  'line-color': '#32D400',
+  'line-width': 3,
+  'line-opacity': 0.6,
+};
+
+// Wait for the map to load before adding data
+map.on('load', () => {
+  // Boston bike lanes (GeoJSON from Boston open data)
+  map.addSource('boston_route', {
+    type: 'geojson',
+    data: 'https://bostonopendata-boston.opendata.arcgis.com/datasets/boston::existing-bike-network-2022.geojson',
+  });
+  map.addLayer({
+    id: 'bike-lanes',
+    type: 'line',
+    source: 'boston_route',
+    paint: bikeLanePaint,
+  });
+
+  // Cambridge bike lanes (GeoJSON from Cambridge ArcGIS)
+  map.addSource('cambridge_route', {
+    type: 'geojson',
+    data: 'https://services1.arcgis.com/WnzC35krSYGuYov4/ArcGIS/rest/services/Bike_Facilities/FeatureServer/0/query?outFields=*&where=1%3D1&f=geojson',
+  });
+  map.addLayer({
+    id: 'cambridge-bike-lanes',
+    type: 'line',
+    source: 'cambridge_route',
+    paint: bikeLanePaint,
+  });
+});
